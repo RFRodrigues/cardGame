@@ -28,6 +28,101 @@
   color: #61dafb;
 }
 
+#table {
+  background-color: rgb(0, 92, 0);
+  height: 600px;
+  width: 800px;
+  top: 20%;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.card{
+  width: 60px;
+  height: 100px;
+  border-radius: 5px;
+  margin-left: -20px;
+}
+
+.card:hover{
+  cursor: pointer;
+}
+
+#player1{
+  position: relative;
+  margin-top: 10px;
+}
+
+#player2{
+  position: absolute;
+  left: -20%;
+  top: 40%;
+  margin: 0 25px;
+  transform: rotate(90deg);
+}
+
+#player3{
+  position: absolute;
+  top: 40%;
+  right: -20%;
+  margin: 0 25px;
+  transform: rotate(90deg);
+}
+
+#player4{
+  position: absolute;
+  bottom: 10px;
+  left: 25%;
+  margin: 0 25px;
+}
+
+#play1,#play2,#play3,#play4{
+  width: 60px;
+  height: 100px;
+}
+
+#play1{
+  position: absolute;
+  top: 25%;
+  right: 45%;
+}
+
+#play2{
+  position: absolute;
+    bottom: 45%;
+    left: 25%;
+    transform: rotate(90deg);
+}
+
+#play3{
+  position: absolute;
+  bottom: 45%;
+  right: 25%;
+  transform: rotate(90deg);
+}
+
+#play4{
+  position: absolute;
+  bottom: 25%;
+  right: 45%;
+}
+
+
+
+/* #player2 .card, #player3 .card {
+  transform: rotate(90deg);
+} */
+
+button{
+  position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
