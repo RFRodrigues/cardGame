@@ -56,19 +56,21 @@
 }
 
 #player2{
-  position: absolute;
-  left: -20%;
-  top: 40%;
+  position: relative;
+  left: -35%;
+  top: 32%;
   margin: 0 25px;
   transform: rotate(90deg);
+  height: 0px;
 }
 
 #player3{
-  position: absolute;
-  top: 40%;
-  right: -20%;
+  position: relative;
+  top: 32%;
+  right: -48%;
   margin: 0 25px;
   transform: rotate(90deg);
+  height: 0px;
 }
 
 #player4{
