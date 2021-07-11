@@ -111,6 +111,18 @@
   right: 45%;
 }
 
+.team-points{
+  position: absolute;
+  top: -100px;
+  left: 200px;
+}
+
+.opposite-points{
+  position: absolute;
+  top: -100px;
+  right: 200px;
+}
+
 
 
 /* #player2 .card, #player3 .card {
