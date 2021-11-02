@@ -41,7 +41,9 @@ class Table extends React.Component {
             this.setState({ actualPlayerToPlay: 3 }, console.log("played 2"));
         }
         //console.log(this.state, "avaliação final");
-        if (this.state.players[0].selectedCard !== "" && this.state.players[1].selectedCard !== "" && this.state.players[2].selectedCard !== "" && this.state.players[3].selectedCard !== "" && !this.state.roundEnd) {
+        if (this.state.players[0].selectedCard !== "" && this.state.players[1].selectedCard !== "" &&
+         this.state.players[2].selectedCard !== "" && this.state.players[3].selectedCard !== "" &&
+          !this.state.roundEnd && this.state.players[0].cards.length != 0) {
             this.setState({ roundEnd: true });
             setTimeout(() => {
                 console.log(this.state, "final da ronda");
@@ -50,9 +52,14 @@ class Table extends React.Component {
 
             }, 3000);
         }
-        if (this.state.players[0].selectedCard !== "" && this.state.players[0].cards.length === 0 && this.state.players[1].cards.length === 0
-            && this.state.players[2].cards.length === 0 && this.state.players[3].cards.length === 0) {
-            this.restartGame();
+        if (this.state.players[0].selectedCard !== "" && this.state.players[0].cards.length === 0 &&
+         this.state.players[1].cards.length === 0 && this.state.players[2].cards.length === 0 &&
+          this.state.players[3].cards.length === 0) {
+                setTimeout(() => {
+                    console.log(this.state, "final do jogo");
+                    this.restartGame();
+                }, 3000);
+            
         }
     }
 
@@ -69,7 +76,7 @@ class Table extends React.Component {
         });
 
         //está a dar erro por causa do update na ultima condição
-        this.setState({ mainCard: {}, suit: "", players: players, roundEnd: false });
+        this.setState({ mainCard: {}, players: players, roundEnd: false });
     }
 
     setAllCards = () => {
@@ -141,7 +148,8 @@ class Table extends React.Component {
         else {
             //selectCard
             let cardId = this.selectCard();
-            if (this.state.p2SelectedCard === "" && this.state.p3SelectedCard === "" && this.state.p4SelectedCard === "" && this.state.p1SelectedCard === "") {
+            if (this.state.p2SelectedCard === "" && this.state.p3SelectedCard === "" &&
+             this.state.p4SelectedCard === "" && this.state.p1SelectedCard === "") {
                 this.setState({ mainCard: cardId });
             }
             if (this.state.actualPlayerToPlay === 0) {
@@ -252,9 +260,23 @@ class Table extends React.Component {
             }
             winningPoints += this.getCardPoints(player.selectedCard[0]);
         });
-        this.setState({ [winnerTeam]: this.state[winnerTeam] + winningPoints });
+        this.setState({ [winnerTeam]: this.state[winnerTeam] + winningPoints }, console.log(this.state));
         console.log({ GetWinner: this.selectHighestCard(cards) });
 
+    }
+
+    showHideMenu = () => {
+        let menu = document.getElementById("menu");
+        let scores = document.getElementById("scores");
+        if(menu.style.display == "block"){
+            menu.style.display = "none";
+            scores.style.display = "block";
+            this.giveCards();
+        }
+        else{
+            menu.style.display = "block";
+            scores.style.display = "none";
+        }
     }
 
 
@@ -280,13 +302,13 @@ class Table extends React.Component {
             players.push(tempPlayer);
         });
 
-
         return (
             <div id="table">
-                <div>
+                <div id="scores">
                     <span className="team-points">Your Team: {this.state.myTeam}</span>
                     <span className="opposite-points">Opposite Team: {this.state.oppositeTeam}</span>
                 </div>
+                <div id="suit"><p>Suit: {this.state.suit}</p></div>
                 <div id="player1">{players[0] ? players[0].cards : ""}<div>player 1</div></div>
                 <div id="player2">{players[1] ? players[1].cards : ""}<div>player 2</div></div>
                 <div id="player3">{players[2] ? players[2].cards : ""}<div>player 3</div></div>
@@ -296,7 +318,11 @@ class Table extends React.Component {
                 <div id="play2">{this.state.players[1].selectedCard !== "" ? <img key="play2" className="card" src={require('../images/' + this.state.players[1].selectedCard + '.png')} alt="Logo" /> : ""}</div>
                 <div id="play3">{this.state.players[2].selectedCard !== "" ? <img key="play3" className="card" src={require('../images/' + this.state.players[2].selectedCard + '.png')} alt="Logo" /> : ""}</div>
                 <div id="play4">{this.state.players[3].selectedCard !== "" ? <img key="play4" className="card" src={require('../images/' + this.state.players[3].selectedCard + '.png')} alt="Logo" /> : ""}</div>
-                <button onClick={() => this.giveCards()}>iniciar jogo</button>
+                
+
+                <div id="menu" style={{display:"block"}}>
+                    <div class="btnStart" onClick={() => this.showHideMenu()}><span>Start</span></div>
+                </div>
             </div>
         )
     }
