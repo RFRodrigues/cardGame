@@ -18,7 +18,8 @@ class Table extends React.Component {
             suit: "",
             myTeam: 0,
             oppositeTeam: 0,
-            roundEnd: false
+            roundEnd: false,
+            winner: ""
         };
     }
 
@@ -57,7 +58,9 @@ class Table extends React.Component {
           this.state.players[3].cards.length === 0) {
                 setTimeout(() => {
                     console.log(this.state, "final do jogo");
-                    this.restartGame();
+                    this.getWinner();
+                    this.state.myTeam > this.state.oppositeTeam ? this.setState({ winner: "WINNER!!"}) : this.setState({ winner: "Loser!!"});
+                    this.showHideMenu();
                 }, 3000);
             
         }
@@ -139,7 +142,7 @@ class Table extends React.Component {
 
     playCard = (auto, e) => {
 
-        if (auto === false) {
+        if (!auto) {
             let players = [...this.state.players];
             players[3].selectedCard = e.target.id;
             this.removeCardFromDeck(this.state.players[this.state.actualPlayerToPlay], e.target.id);
@@ -275,7 +278,6 @@ class Table extends React.Component {
         }
         else{
             menu.style.display = "block";
-            scores.style.display = "none";
         }
     }
 
@@ -321,7 +323,12 @@ class Table extends React.Component {
                 
 
                 <div id="menu" style={{display:"block"}}>
-                    <div class="btnStart" onClick={() => this.showHideMenu()}><span>Start</span></div>
+                    {this.state.myTeam === 0 && this.state.oppositeTeam === 0 ? <div class="btnStart" onClick={() => this.showHideMenu()}><span>Start</span></div> :
+                     <div class="winner"><span>{this.state.winner}</span><div onClick={() => {this.showHideMenu();this.restartGame()}} class="btnStart">Restart</div></div>}
+                </div>
+
+                <div>
+                    
                 </div>
             </div>
         )
