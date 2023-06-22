@@ -23,9 +23,10 @@ class Table extends React.Component {
         };
     }
 
-
     componentDidMount() {
-        this.setState({ allCards: this.setAllCards() });
+        
+        this.setState({ allCards: this.setAllCards() }, ()=> this.giveCards());
+        ;
     }
 
     componentDidUpdate() {
@@ -44,24 +45,28 @@ class Table extends React.Component {
         //console.log(this.state, "avaliação final");
         if (this.state.players[0].selectedCard !== "" && this.state.players[1].selectedCard !== "" &&
          this.state.players[2].selectedCard !== "" && this.state.players[3].selectedCard !== "" &&
-          !this.state.roundEnd && this.state.players[0].cards.length != 0) {
+          !this.state.roundEnd && this.state.players[0].cards.length !== 0) {
             this.setState({ roundEnd: true });
             setTimeout(() => {
                 console.log(this.state, "final da ronda");
                 this.getWinner();
                 this.restartRound();
 
-            }, 3000);
+            }, 1000);
         }
-        if (this.state.players[0].selectedCard !== "" && this.state.players[0].cards.length === 0 &&
+        if (this.state.winner === "" && this.state.players[0].selectedCard !== "" && this.state.players[0].cards.length === 0 &&
          this.state.players[1].cards.length === 0 && this.state.players[2].cards.length === 0 &&
           this.state.players[3].cards.length === 0) {
+            this.getWinner();
+            this.state.myTeam > this.state.oppositeTeam ? this.setState({ winner: "WINNER!!"}) : this.setState({ winner: "Loser!!"});
                 setTimeout(() => {
                     console.log(this.state, "final do jogo");
-                    this.getWinner();
-                    this.state.myTeam > this.state.oppositeTeam ? this.setState({ winner: "WINNER!!"}) : this.setState({ winner: "Loser!!"});
-                    this.showHideMenu();
-                }, 3000);
+                    this.props.setGameStatus("paused");
+                    this.props.showBlurMenu();
+
+                    
+                    //this.props.showHideMenu();
+                }, 1000);
             
         }
     }
@@ -119,7 +124,7 @@ class Table extends React.Component {
             }
             players.push({ pName: "player" + (i + 1), cards: playerCardsTemp, selectedCard: "" });
         }
-        this.setState({ players: players, suit: suit }, () => console.log(this.state));
+        this.setState({ players: players, suit: suit });
     }
 
     getCardValue = (card) => {
@@ -263,46 +268,33 @@ class Table extends React.Component {
             }
             winningPoints += this.getCardPoints(player.selectedCard[0]);
         });
-        this.setState({ [winnerTeam]: this.state[winnerTeam] + winningPoints }, console.log(this.state));
-        console.log({ GetWinner: this.selectHighestCard(cards) });
+        this.setState({ [winnerTeam]: this.state[winnerTeam] + winningPoints }, ()=> console.log(this.state));
 
     }
-
-    showHideMenu = () => {
-        let menu = document.getElementById("menu");
-        let scores = document.getElementById("scores");
-        if(menu.style.display == "block"){
-            menu.style.display = "none";
-            scores.style.display = "block";
-            this.giveCards();
-        }
-        else{
-            menu.style.display = "block";
-        }
-    }
-
-
 
     render() {
 
         let players = [];
-
-        this.state.players.forEach((player, index) => {
-            let tempPlayer = { cards: [] };
-            if (index !== 3) {
-                for (let i = 0; i < player.cards.length; i++) {
-                    tempPlayer.cards.push(<img id={player.cards[i].value + player.cards[i].type} className="card" src={require('../images/card.jpg')} alt="Logo" />);
+        
+        if(this.state.players[0].cards[0] !== undefined){
+            this.state.players.forEach((player, index) => {
+                let tempPlayer = { cards: [] };
+                if (index !== 3) {
+                    for (let i = 0; i < player.cards.length; i++) {
+                        tempPlayer.cards.push(<img id={player.cards[i].value + player.cards[i].type} className="card" src={require('../images/card.jpg')} alt="Logo" />);
+                    }
                 }
-            }
-            else {
-
-                for (let i = 0; i < player.cards.length; i++) {
-                    let cardId = player.cards[i].value + player.cards[i].type;
-                    tempPlayer.cards.push(<img id={cardId} onClick={(e) => this.playCard(false, e)} className="card" src={require('../images/' + player.cards[i].value + player.cards[i].type + '.png')} alt="Logo" />);
+                else {
+    
+                    for (let i = 0; i < player.cards.length; i++) {
+                        let cardId = player.cards[i].value + player.cards[i].type;
+                        tempPlayer.cards.push(<img id={cardId} onClick={(e) => this.playCard(false, e)} className="card" src={require('../images/' + player.cards[i].value + player.cards[i].type + '.png')} alt="Logo" />);
+                    }
                 }
-            }
-            players.push(tempPlayer);
-        });
+                players.push(tempPlayer);
+            });
+        }
+        
 
         return (
             <div id="table">
@@ -311,25 +303,15 @@ class Table extends React.Component {
                     <span className="opposite-points">Opposite Team: {this.state.oppositeTeam}</span>
                 </div>
                 <div id="suit"><p>Suit: {this.state.suit}</p></div>
-                <div id="player1">{players[0] ? players[0].cards : ""}<div>player 1</div></div>
-                <div id="player2">{players[1] ? players[1].cards : ""}<div>player 2</div></div>
-                <div id="player3">{players[2] ? players[2].cards : ""}<div>player 3</div></div>
-                <div id="player4">{players[3] ? players[3].cards : ""}<div>player 4</div></div>
+                <div className='playerWrapper1'><div id="player1">{players[0] ? players[0].cards : ""}</div><div className='playerLabel1'>player 1</div></div>
+                <div className='playerWrapper2'><div id="player2">{players[1] ? players[1].cards : ""}</div><div className='playerLabel2'>player 2</div></div>
+                <div className='playerWrapper3'><div id="player3">{players[2] ? players[2].cards : ""}</div><div className='playerLabel3'>player 3</div></div>
+                <div className='playerWrapper4'><div id="player4">{players[3] ? players[3].cards : ""}</div><div className='playerLabel4'>player 4</div></div>
 
                 <div id="play1">{this.state.players[0].selectedCard !== "" ? <img key="play1" className="card" src={require('../images/' + this.state.players[0].selectedCard + '.png')} alt="Logo" /> : ""}</div>
                 <div id="play2">{this.state.players[1].selectedCard !== "" ? <img key="play2" className="card" src={require('../images/' + this.state.players[1].selectedCard + '.png')} alt="Logo" /> : ""}</div>
                 <div id="play3">{this.state.players[2].selectedCard !== "" ? <img key="play3" className="card" src={require('../images/' + this.state.players[2].selectedCard + '.png')} alt="Logo" /> : ""}</div>
                 <div id="play4">{this.state.players[3].selectedCard !== "" ? <img key="play4" className="card" src={require('../images/' + this.state.players[3].selectedCard + '.png')} alt="Logo" /> : ""}</div>
-                
-
-                <div id="menu" style={{display:"block"}}>
-                    {this.state.myTeam === 0 && this.state.oppositeTeam === 0 ? <div class="btnStart" onClick={() => this.showHideMenu()}><span>Start</span></div> :
-                     <div class="winner"><span>{this.state.winner}</span><div onClick={() => {this.showHideMenu();this.restartGame()}} class="btnStart">Restart</div></div>}
-                </div>
-
-                <div>
-                    
-                </div>
             </div>
         )
     }

@@ -39,6 +39,30 @@
   margin: auto;
 }
 
+.menu{
+  background-color: rgb(0, 92, 0);
+  height: 600px;
+  width: 800px;
+  top: 7%;
+  position: fixed;
+  left: 0;
+  right: 0;
+  margin: auto;
+  line-height: 550px;
+}
+
+.blurMenu {
+  background-color: rgb(0, 92, 0);
+  height: 600px;
+  width: 800px;
+  top: 7%;
+  position: fixed;
+  left: 0;
+  right: 0;
+  margin: auto;
+  opacity: 0.6;
+}
+
 .card{
   width: 60px;
   height: 100px;
@@ -48,36 +72,68 @@
 
 .card:hover{
   cursor: pointer;
+  box-shadow: 0 0 0 1px black;
+  transition: 0.1s ease;
 }
 
 #player1{
-  position: relative;
-  margin-top: 10px;
+  transform: rotate(0deg);
+}
+
+.playerLabel1 {
+  transform: rotate(180deg);
+}
+
+.playerLabel3 {
+  transform: rotate(-90deg);
+  height: 0;
+}
+
+.playerLabel2 {
+  transform: rotate(90deg);
+  height: 0;
 }
 
 #player2{
-  position: relative;
-  left: -34%;
-  top: 32%;
-  margin: 0 25px;
-  transform: rotate(90deg);
+  transform: rotate(-90deg);
   height: 0px;
 }
 
 #player3{
-  position: relative;
-  top: 32%;
-  right: -48%;
-  margin: 0 25px;
   transform: rotate(90deg);
   height: 0px;
 }
 
 #player4{
-  position: absolute;
-  bottom: 10px;
-  left: 25%;
   margin: 0 25px;
+}
+
+#player1{
+  transform: rotate(180deg);
+}
+
+.playerWrapper4 {
+  position: relative;
+  bottom: -377px;
+}
+
+.playerWrapper3 {
+  position: relative;
+  bottom: -165px;
+  left: 398px;
+}
+
+.playerWrapper2 {
+  position: relative;
+  top: 166px;
+  left: -398px;
+}
+
+.playerWrapper1 {
+  position: relative;
+  top: -17px;
+  left: 0;
+  transform: rotate(180deg);
 }
 
 #play1,#play2,#play3,#play4{
@@ -87,7 +143,7 @@
 
 #play1{
   position: absolute;
-  top: 25%;
+  top: 20%;
   right: 45%;
 }
 
@@ -123,12 +179,6 @@
   right: 200px;
 }
 
-
-
-/* #player2 .card, #player3 .card {
-  transform: rotate(90deg);
-} */
-
 button{
   position: absolute;
     top: 0;
@@ -141,17 +191,7 @@ button{
   right: 40px;
 }
 
-#menu{
-  background-color: rgb(0, 92, 0);
-  height: 500px;
-  width: 800px;
-  top: 0%;
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin: auto;
-  padding-top: 100px;
-}
+
 
 .btnStart{
   display: inline-block;
@@ -170,6 +210,7 @@ button{
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 250px;
 }
 
 
