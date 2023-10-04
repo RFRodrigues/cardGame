@@ -1,7 +1,7 @@
 import React from 'react';
 
 const cardValue = [{ card: "2", value: 0, points: 0 }, { card: "3", value: 1, points: 0 }, { card: "4", value: 2, points: 0 }, { card: "5", value: 3, points: 0 },
-{ card: "6", value: 4, points: 0 }, { card: "Q", value: 6, points: 2 }, { card: "J", value: 5, points: 3 }, { card: "K", value: 7, points: 4 },
+{ card: "6", value: 4, points: 0 }, { card: "Q", value: 5, points: 2 }, { card: "J", value: 6, points: 3 }, { card: "K", value: 7, points: 4 },
 { card: "7", value: 8, points: 10 }, { card: "A", value: 9, points: 11 }];
 
 const cardTypes = ["D", "C", "S", "H"];
@@ -11,7 +11,12 @@ class Table extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            players: [{ cards: [], selectedCard: "" }, { cards: [], selectedCard: "" }, { cards: [], selectedCard: "" }, { cards: [], selectedCard: "" }],
+            players: [
+                { cards: [], selectedCard: "", alreadyPlayed: false },
+                { cards: [], selectedCard: "", alreadyPlayed: false },
+                { cards: [], selectedCard: "", alreadyPlayed: false },
+                { cards: [], selectedCard: "", alreadyPlayed: false }
+            ],
             allCards: [],
             actualPlayerToPlay: 3,
             mainCard: {},
@@ -24,56 +29,60 @@ class Table extends React.Component {
     }
 
     componentDidMount() {
-        
-        this.setState({ allCards: this.setAllCards() }, ()=> this.giveCards());
+
+        this.setState({ allCards: this.setAllCards() }, () => this.giveCards());
         ;
     }
 
     componentDidUpdate() {
-        if (this.state.actualPlayerToPlay === 1) {
+        if (this.props.gameStatus === "restart") {
+            this.restartGame();
+            this.props.setGameStatus("started");
+        }
+        if (this.state.actualPlayerToPlay === 2 && !this.state.players[this.state.actualPlayerToPlay].alreadyPlayed) {
             this.playCard(true);
             this.setState({ actualPlayerToPlay: 0 }, console.log("played 1"));
         }
-        if (this.state.actualPlayerToPlay === 0) {
+        if (this.state.actualPlayerToPlay === 0 && !this.state.players[this.state.actualPlayerToPlay].alreadyPlayed) {
             this.playCard(true);
-            this.setState({ actualPlayerToPlay: 2 }, console.log("played 0"));
+            this.setState({ actualPlayerToPlay: 1 }, console.log("played 0"));
         }
-        if (this.state.actualPlayerToPlay === 2) {
+        if (this.state.actualPlayerToPlay === 1 && !this.state.players[this.state.actualPlayerToPlay].alreadyPlayed) {
             this.playCard(true);
             this.setState({ actualPlayerToPlay: 3 }, console.log("played 2"));
         }
         //console.log(this.state, "avaliação final");
         if (this.state.players[0].selectedCard !== "" && this.state.players[1].selectedCard !== "" &&
-         this.state.players[2].selectedCard !== "" && this.state.players[3].selectedCard !== "" &&
-          !this.state.roundEnd && this.state.players[0].cards.length !== 0) {
+            this.state.players[2].selectedCard !== "" && this.state.players[3].selectedCard !== "" &&
+            !this.state.roundEnd && this.state.players[0].cards.length !== 0) {
             this.setState({ roundEnd: true });
             setTimeout(() => {
                 console.log(this.state, "final da ronda");
-                this.getWinner();
-                this.restartRound();
-
-            }, 1000);
+                let winner = this.getWinner();
+                this.setState({ actualPlayerToPlay: winner }, () => this.restartRound());
+            }, 10000);
         }
+        //final do jogo
         if (this.state.winner === "" && this.state.players[0].selectedCard !== "" && this.state.players[0].cards.length === 0 &&
-         this.state.players[1].cards.length === 0 && this.state.players[2].cards.length === 0 &&
-          this.state.players[3].cards.length === 0) {
+            this.state.players[1].cards.length === 0 && this.state.players[2].cards.length === 0 &&
+            this.state.players[3].cards.length === 0) {
             this.getWinner();
-            this.state.myTeam > this.state.oppositeTeam ? this.setState({ winner: "WINNER!!"}) : this.setState({ winner: "Loser!!"});
-                setTimeout(() => {
-                    console.log(this.state, "final do jogo");
-                    this.props.setGameStatus("paused");
-                    this.props.showBlurMenu();
+            this.state.myTeam > this.state.oppositeTeam ? this.setState({ winner: "WINNER!!" }) : this.setState({ winner: "Loser!!" });
+            setTimeout(() => {
+                console.log(this.state, "final do jogo");
+                this.props.setGameStatus("paused");
+                this.props.showBlurMenu();
 
-                    
-                    //this.props.showHideMenu();
-                }, 1000);
-            
+
+                //this.props.showHideMenu();
+            }, 1000);
+
         }
     }
 
     restartGame = () => {
         this.restartRound();
-        this.setState({myTeam: 0, oppositeTeam: 0});
+        this.setState({ myTeam: 0, oppositeTeam: 0 });
         this.giveCards();
     }
 
@@ -81,9 +90,9 @@ class Table extends React.Component {
         let players = [...this.state.players];
         players.forEach(player => {
             player.selectedCard = "";
+            player.alreadyPlayed = false;
         });
 
-        //está a dar erro por causa do update na ultima condição
         this.setState({ mainCard: {}, players: players, roundEnd: false });
     }
 
@@ -122,13 +131,12 @@ class Table extends React.Component {
                 let randomNum = Math.floor(Math.random() * tempAllCardsArray.length);
                 playerCardsTemp.push(tempAllCardsArray.splice(randomNum, 1)[0]);
             }
-            players.push({ pName: "player" + (i + 1), cards: playerCardsTemp, selectedCard: "" });
+            players.push({ pName: "player" + (i + 1), cards: playerCardsTemp, selectedCard: "", alreadyPlayed: false });
         }
         this.setState({ players: players, suit: suit });
     }
 
     getCardValue = (card) => {
-        console.log(card);
         for (let i = 0; i < cardValue.length; i++) {
             if (cardValue[i].card === card) {
                 return cardValue[i].value;
@@ -137,7 +145,6 @@ class Table extends React.Component {
     }
 
     getCardPoints = (card) => {
-        console.log(card);
         for (let i = 0; i < cardValue.length; i++) {
             if (cardValue[i].card === card) {
                 return cardValue[i].points;
@@ -150,52 +157,66 @@ class Table extends React.Component {
         if (!auto) {
             let players = [...this.state.players];
             players[3].selectedCard = e.target.id;
-            this.removeCardFromDeck(this.state.players[this.state.actualPlayerToPlay], e.target.id);
-            this.setState({ players: players, mainCard: e.target.id, actualPlayerToPlay: 1 });
+            players[3].alreadyPlayed = true;
+            this.removeCardFromDeck(this.state.players[3], e.target.id);
+            this.setState({ players: players, mainCard: e.target.id, actualPlayerToPlay: 2 });
         }
         else {
             //selectCard
             let cardId = this.selectCard();
+            console.log(cardId);
             if (this.state.p2SelectedCard === "" && this.state.p3SelectedCard === "" &&
-             this.state.p4SelectedCard === "" && this.state.p1SelectedCard === "") {
+                this.state.p4SelectedCard === "" && this.state.p1SelectedCard === "") {
                 this.setState({ mainCard: cardId });
             }
             if (this.state.actualPlayerToPlay === 0) {
                 let players = [...this.state.players];
                 players[0].selectedCard = cardId;
+                players[0].alreadyPlayed = true;
                 this.setState({ players: players });
 
             }
             if (this.state.actualPlayerToPlay === 1) {
                 let players = [...this.state.players];
                 players[1].selectedCard = cardId;
+                players[1].alreadyPlayed = true;
                 this.setState({ players: players });
             }
             if (this.state.actualPlayerToPlay === 2) {
                 let players = [...this.state.players];
                 players[2].selectedCard = cardId;
+                players[2].alreadyPlayed = true;
                 this.setState({ players: players });
             }
             this.removeCardFromDeck(this.state.players[this.state.actualPlayerToPlay], cardId);
         }
     }
 
-    selectHighestCard = (cards) => {
+    selectHighestOrLowestCard = (cards, highestOrLowest) => {
         console.log(cards);
-        let highCard = { type: "", value: "" };
+        let highestLowerCard = { type: "", value: "" };
         for (let i = 0; i < cards.length; i++) {
-
-            if (highCard.value === "") {
-                highCard = cards[0];
+            if (highestLowerCard.value === "") {
+                highestLowerCard = cards[0];
             }
             else {
-                if (this.getCardValue(cards[i].value) > this.getCardValue(highCard.value)) {
-                    highCard = cards[i];
+                //get lowest or highest card
+                if (highestOrLowest === "high") {
+                    console.log(cards[i]);
+                    console.log(this.state.suit);
+                    if (this.getCardValue(cards[i].value) > this.getCardValue(highestLowerCard.value)) {
+                        highestLowerCard = cards[i];
+                    }
+                }
+                if (highestOrLowest === "low") {
+                    if (this.getCardValue(cards[i].value) < this.getCardValue(highestLowerCard.value)) {
+                        highestLowerCard = cards[i];
+                    }
                 }
             }
         }
-        console.log({ highCard: highCard });
-        return highCard;
+        console.log({ highestLowerCard: highestLowerCard });
+        return highestLowerCard;
     }
 
     selectCard = () => {
@@ -216,12 +237,15 @@ class Table extends React.Component {
             if (this.state.actualPlayerToPlay === 0) {
                 console.log(this.state.players[1].selectedCard[0]);
                 for (let j = 0; j < cardsFromSuit.length; j++) {
+                    //assistir ao naipe com carta alta
                     if (this.getCardValue(cardsFromSuit[j].value) > this.getCardValue(this.state.players[1].selectedCard[0])) {
-                        let highCard = this.selectHighestCard(cardsFromSuit);
+                        let highCard = this.selectHighestOrLowestCard(cardsFromSuit, "high");
                         return highCard.value + highCard.type;
                     }
                     else {
-                        //assistir do mesmo naipe mas mais baixa
+                        //assistir ao naipe mas carta mais baixa
+                        let lowerCard = this.selectHighestOrLowestCard(cardsFromSuit, "low");
+                        return lowerCard.value + lowerCard.type;
                     }
                 }
             }
@@ -242,19 +266,17 @@ class Table extends React.Component {
         let cards = [];
         this.state.players.forEach(player => {
             console.log(player);
-            if (player.selectedCard[1] === this.state.mainCard[1]) {
-                cards.push({ value: player.selectedCard[0], type: player.selectedCard[1] });
-
-            }
-            //    if(){
-            //        
-            //    }
+            cards.push({ value: player.selectedCard[0], type: player.selectedCard[1] });
         });
-        //console.log(cards);
-        let winnerCard = this.selectHighestCard(cards);
+        let winnerCard = this.selectHighestOrLowestCard(cards, "high");
         let winningPoints = 0;
         let winnerTeam = "";
+        let winnerPlayer = "";
         this.state.players.forEach(player => {
+
+            if(this.getCardValue(player.selectedCard[0]) > this.getCardValue(winnerCard.value) &&  player.selectedCard[1] === this.state.suit) {
+                winnerCard.type = player.selectedCard[1];
+            }
 
             if (player.selectedCard[0] === winnerCard.value && player.selectedCard[1] === winnerCard.type) {
                 if (player.pName === "player2" || player.pName === "player3") {
@@ -264,19 +286,21 @@ class Table extends React.Component {
                     winnerTeam = "myTeam";
                 }
                 console.log({ "Vencedor": player });
+                winnerPlayer = player.pName.slice(-1) - 1;
+                console.log({ "winnerPlayer": winnerPlayer });
 
             }
             winningPoints += this.getCardPoints(player.selectedCard[0]);
         });
-        this.setState({ [winnerTeam]: this.state[winnerTeam] + winningPoints }, ()=> console.log(this.state));
-
+        this.setState({ [winnerTeam]: this.state[winnerTeam] + winningPoints }, () => console.log(this.state));
+        return winnerPlayer;
     }
 
     render() {
 
         let players = [];
-        
-        if(this.state.players[0].cards[0] !== undefined){
+
+        if (this.state.players[0].cards[0] !== undefined) {
             this.state.players.forEach((player, index) => {
                 let tempPlayer = { cards: [] };
                 if (index !== 3) {
@@ -285,7 +309,7 @@ class Table extends React.Component {
                     }
                 }
                 else {
-    
+
                     for (let i = 0; i < player.cards.length; i++) {
                         let cardId = player.cards[i].value + player.cards[i].type;
                         tempPlayer.cards.push(<img id={cardId} onClick={(e) => this.playCard(false, e)} className="card" src={require('../images/' + player.cards[i].value + player.cards[i].type + '.png')} alt="Logo" />);
@@ -294,7 +318,7 @@ class Table extends React.Component {
                 players.push(tempPlayer);
             });
         }
-        
+
 
         return (
             <div id="table">

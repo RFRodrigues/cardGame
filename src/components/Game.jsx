@@ -24,7 +24,7 @@ class Game extends React.Component {
             <>
                 {console.log(this.state.gameStatus)}
                 {console.log(this.state.status)}
-                <Table showBlurMenu={this.showBlurMenu} setGameStatus={this.setGameStatus}/>
+                <Table showBlurMenu={this.showBlurMenu} setGameStatus={this.setGameStatus} gameStatus={this.state.gameStatus}/>
                 {this.state.gameStatus === "notStarted" || (this.state.gameStatus === "paused" && this.state.status === "blurMenu") ? <Menu showBlurMenu={this.showBlurMenu} setGameStatus={this.setGameStatus} gameStatus={this.state.gameStatus} status={this.state.status}/> : ''}
             </>
         )
